@@ -6,15 +6,26 @@ from torch.utils.data import DataLoader, Subset
 from sklearn.model_selection import StratifiedKFold
 import numpy as np
 
-def get_transforms(phase='train'):
+def get_transforms(phase='train', augment=True):
     if phase == 'train':
-        return transforms.Compose([
-            transforms.Resize((224, 224)),
-            transforms.RandomHorizontalFlip(),
-            transforms.RandomRotation(10),
-            transforms.ToTensor(),
-            transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-        ])
+        if augment:
+            return transforms.Compose([
+                transforms.RandomResizedCrop(224, scale=(0.8, 1.0)),
+                transforms.RandomHorizontalFlip(),
+                transforms.RandomVerticalFlip(p=0.05),
+                transforms.RandomRotation(15),
+                transforms.ColorJitter(brightness=0.1, contrast=0.1, saturation=0.1),
+                transforms.RandomAffine(degrees=0, translate=(0.1, 0.1)),
+                transforms.ToTensor(),
+                transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+            ])
+        else:
+            return transforms.Compose([
+                transforms.Resize((224, 224)),
+                transforms.RandomHorizontalFlip(),
+                transforms.ToTensor(),
+                transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+            ])
     else:
         return transforms.Compose([
             transforms.Resize((224, 224)),
@@ -23,14 +34,15 @@ def get_transforms(phase='train'):
         ])
 
 class AlzheimerDatasetManager:
-    def __init__(self, data_dir, batch_size=32):
+    def __init__(self, data_dir, batch_size=32, augment=True):
         self.data_dir = data_dir
         self.batch_size = batch_size
+        self.augment = augment
         self.train_dir = os.path.join(data_dir, 'train')
         self.test_dir = os.path.join(data_dir, 'test')
         
         # Load full datasets
-        self.full_train_dataset = datasets.ImageFolder(self.train_dir, transform=get_transforms('train'))
+        self.full_train_dataset = datasets.ImageFolder(self.train_dir, transform=get_transforms('train', augment=augment))
         self.full_test_dataset = datasets.ImageFolder(self.test_dir, transform=get_transforms('val'))
         
         self.classes = self.full_train_dataset.classes

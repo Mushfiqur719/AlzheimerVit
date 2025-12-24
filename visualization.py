@@ -82,3 +82,25 @@ def plot_confusion_matrix(cm, classes, filename='confusion_matrix.png'):
     plt.xlabel('Predicted label')
     plt.savefig(filename)
     plt.close()
+
+def plot_ablation_results(results_dict, filename='ablation_results.png'):
+    """
+    Plots a bar chart comparing different training variants.
+    """
+    variants = list(results_dict.keys())
+    scores = list(results_dict.values())
+    
+    plt.figure(figsize=(10, 6))
+    bars = plt.bar(variants, scores, color=['skyblue', 'lightgreen', 'salmon'])
+    plt.title('Ablation Study: Macro F1-Score Comparison')
+    plt.ylabel('Macro F1-Score')
+    plt.ylim(0, 1.0)
+    
+    # Add score labels on top of bars
+    for bar in bars:
+        yval = bar.get_height()
+        plt.text(bar.get_x() + bar.get_width()/2, yval + 0.01, f'{yval:.4f}', ha='center', va='bottom')
+        
+    plt.tight_layout()
+    plt.savefig(filename)
+    plt.close()

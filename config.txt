@@ -1,0 +1,12 @@
+# Alzheimer's ViT Project Configuration
+# Change values here to check performance impact
+
+data_dir=c:/Users/Mushfiqur Rahman/Documents/Projects/AlzheimerVit/Alzheimer_s Dataset
+num_epochs=25
+num_folds=5
+pso_particles=3
+pso_iterations=2
+batch_size=32
+learning_rate=1e-4
+weight_decay=1e-4
+dropout=0.1
